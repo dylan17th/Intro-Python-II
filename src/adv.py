@@ -41,9 +41,11 @@ is_playing = True
 while is_playing:
 
     print(player1.current_room_nice_print())
-    print(player1.all_items())
     print(f"\n****Available Items in room listed below ****\n")
-    print(player1.current_room.show_items_in_room())
+
+    for item in player1.current_room.show_items_in_room():
+        print(f"{item}\n")
+
     desired_request = input('What do you want to do ')
     desired_request_split = desired_request.split(' ')
 
@@ -72,14 +74,44 @@ while is_playing:
                 player1.current_room = player1.current_room.w_to
             else:
                 print("********sorry you hit a wall*********\n*****Below is your current location*****")
+        
+        elif desired_request.lower() == 'i':
+            print("\n*****Items your carrying listed below*****\n")
+            for item in player1.all_items():
+                print(f"{item}\n")
 
         elif desired_request.lower() == 'q':
             is_playing = False
-        
+
         else:
-            print("*****Sorry that is not an option!******\nN for north\nS for south\nE for east\nW for west\nQ to quit\n*****Below is your current location*****")
+            print("*****Sorry that is not an option!******\nN for north\nS for south\nE for east\nW for west\nQ to quit\ntake [item name]\ndrop [item name]\n*****Below is your current location*****")
     
     elif len(desired_request_split) == 2:
 
-        print('trying to pick up an object in room')
+        if desired_request_split[0].lower() == "take":
+            if len(player1.items) == 3:
+                print('\n*******SORRRY YOU HAVE TO MANY ITEMS********\n\n*******You must drop an item in order to pick another up*******\n')
 
+            else:
+                item_choosen = [item for item in player1.current_room.items if item.name == desired_request_split[1].lower()]
+                if len(item_choosen) > 0:
+                    print("item exist", item_choosen)
+                    player1.add_item(item_choosen[0])
+                    player1.current_room.item_picked_up(item_choosen[0])
+                else:
+                    print("\n*******item doesn't exist in this room******\n")
+            
+        elif desired_request_split[0].lower() == "drop":
+            item_choosen = [item for item in player1.items if item.name == desired_request_split[1].lower()]
+            if len(item_choosen) > 0:
+                print("item exist in inventory")
+                player1.drop_item(item_choosen[0])
+                player1.current_room.item_droped(item_choosen[0])
+            else: 
+                print("\n*******You don't currently have that item in your inventory******\n")
+
+        else:
+            print("*****Sorry that is not an option!******\nN for north\nS for south\nE for east\nW for west\nQ to quit\ntake [item name]\ndrop [item name]\n*****Below is your current location*****")
+
+    else:
+        print("*****Sorry that is not an option!******\nN for north\nS for south\nE for east\nW for west\nQ to quit\ntake [item name]\ndrop [item name]\n*****Below is your current location*****")
